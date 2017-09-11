@@ -1,0 +1,36 @@
+.mdl-layout__header-row {
+    padding: 0 40px 0 40px;
+}
+.mdl-layout__title, .mdl-layout-title {
+    font-size: 24px;
+}
+
+table {
+    margin: auto auto 52px;
+}
+.mdl-data-table th {
+	font-size: 14px;
+}
+table tbody tr td:nth-child(2) {
+	cursor: pointer;
+}
+
+footer {
+	bottom: 0;
+	left: 0;
+	right: 0;
+	position: fixed;
+	z-index: 10;
+}
+.mdl-mini-footer {
+	padding-top: 4px;
+	padding-bottom: 4px;
+}
+footer .mdl-button {
+	margin: 4px;
+}
+
+.page-btn {
+	min-width: 20px;
+	cursor: default;
+}
