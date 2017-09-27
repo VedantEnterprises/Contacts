@@ -1,68 +1,84 @@
+CREATE SCHEMA blink7_contacts DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
+
 --
 -- Contact
 --
-create table contact (
-	id int not null auto_increment,
-    f_name varchar(30) not null,
-    l_name varchar(30) not null,
-    m_name varchar(30),
-    birthday datetime,
-    sex char(1), -- 'M' for male and 'F' for female
-    nationality varchar(50),
-    marital_status varchar(20),
-    site varchar(200),
-    email varchar (50),
-    current_job varchar(100),
-    address_id int,
-    avatar varchar(120),
-    index (id, address_id),
-    primary key (id)
-) engine=InnoDB;
+CREATE TABLE blink7_contacts.contact (
+	id INT UNSIGNED NOT NULL AUTO_INCREMENT,
+    f_name VARCHAR(30) NOT NULL,
+    l_name VARCHAR(30) NOT NULL,
+    m_name VARCHAR(30),
+    birthday DATE,
+    sex ENUM('male', 'female'),
+    nationality VARCHAR(50),
+    marital_status VARCHAR(20),
+    site VARCHAR(200),
+    email VARCHAR (50),
+    current_job VARCHAR(100),
+    address_id INT UNSIGNED,
+    avatar VARCHAR(50),
+    delete_flag BOOL,
+    delete_date TIMESTAMP,
+    INDEX (id, address_id),
+    PRIMARY KEY (id)
+)
+ENGINE=InnoDB 
+DEFAULT CHARACTER SET utf8mb4 
+COLLATE utf8mb4_general_ci;
 
 --
 -- Address
 --
-create table address (
-	id int not null auto_increment,
-    country varchar(50),
-    city varchar(50),
-    detail_address varchar(100),
-    zip int,
-    index (id),
-    primary key (id)
-) engine=InnoDB;
+create table blink7_contacts.address (
+	id INT UNSIGNED NOT NULL AUTO_INCREMENT,
+    country VARCHAR(50),
+    city VARCHAR(50),
+    detail_address VARCHAR(100),
+    zip INT,
+    INDEX (id),
+    PRIMARY KEY (id)
+)
+ENGINE=InnoDB 
+DEFAULT CHARACTER SET utf8mb4 
+COLLATE utf8mb4_general_ci;
 
 --
 -- Phone
 --
-create table phone (
-	id int not null auto_increment,
-    contact_id int not null,
-    country_code int not null,
-    operator_code int not null,
-    phone_number int not null,
-    phone_type char(1) not null, -- 'H' for home and 'M' for mobile
-    comment_text varchar(200),
-    primary key(id),
-    index (contact_id),
-    foreign key (contact_id)
-		references contact(id)
-        on delete cascade
-) engine=InnoDB;
+create table blink7_contacts.phone (
+	id INT UNSIGNED NOT NULL AUTO_INCREMENT,
+    contact_id INT UNSIGNED NOT NULL,
+    country_code INT(3) NOT NULL,
+    operator_code INT(2) NOT NULL,
+    phone_number INT(7) NOT NULL,
+    phone_type ENUM('home', 'mobile') NOT NULL,
+    comment_text VARCHAR(200),
+    PRIMARY KEY (id),
+    INDEX (contact_id),
+    FOREIGN KEY (contact_id)
+		REFERENCES blink7_contacts.contact(id)
+        ON DELETE CASCADE
+)
+ENGINE=InnoDB 
+DEFAULT CHARACTER SET utf8mb4 
+COLLATE utf8mb4_general_ci;
 
 --
 -- Attachment
 --
-create table attachment (
-	id int not null auto_increment,
-    contact_id int not null,
-    file_name varchar (100) not null,
-    upload_date datetime not null,
-    comment_text varchar(200),
-    full_file_name varchar(120) not null,
-    primary key(id),
-    index (contact_id),
-    foreign key (contact_id)
-		references contact(id)
-        on delete cascade
-) engine=InnoDB;
+create table blink7_contacts.attachment (
+	id INT UNSIGNED NOT NULL AUTO_INCREMENT,
+    contact_id INT UNSIGNED NOT NULL,
+    file_uuid VARCHAR(50) NOT NULL,
+    file_name VARCHAR (255) NOT NULL,
+    upload_date TIMESTAMP NOT NULL,
+    comment_text VARCHAR(200),
+    PRIMARY KEY (id),
+    INDEX (contact_id),
+    FOREIGN KEY (contact_id)
+		REFERENCES blink7_contacts.contact(id)
+        ON DELETE CASCADE
+)
+ENGINE=InnoDB 
+DEFAULT CHARACTER SET utf8mb4 
+COLLATE utf8mb4_general_ci;
