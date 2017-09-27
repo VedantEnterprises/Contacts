@@ -1,20 +1,21 @@
-package com.itechart.contacts.db.dao;
+package com.itechart.contacts.db.dao.implimentation;
 
+import com.itechart.contacts.db.dao.ContactDao;
 import com.itechart.contacts.db.model.AddressModel;
 import com.itechart.contacts.db.model.ContactModel;
 import com.itechart.contacts.exception.TransactionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import com.itechart.contacts.util.JdbcUtils;
 
 import javax.sql.DataSource;
 import java.sql.*;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ContactDaoImpl implements ContactDao {
+import static com.itechart.contacts.util.JdbcUtils.*;
 
-    private static ContactDao instance = new ContactDaoImpl();
+public class ContactDaoImpl implements ContactDao {
 
     private static final Logger log = LoggerFactory.getLogger(ContactDaoImpl.class);
 
@@ -38,18 +39,20 @@ public class ContactDaoImpl implements ContactDao {
             "address.detail_address, address.zip FROM contact INNER JOIN address " +
             "ON contact.address_id = address.id LIMIT ? OFFSET ?";
 
-    private static final String DELETE_SQL = "DELETE FROM contact where id = ?";
+    private static final String DELETE_SQL = "UPDATE contact SET delete_flag = 1, delete_date = ? where id = ?";
 
     private static final String COUNT_SQL = "SELECT COUNT(*) FROM contact";
 
     private DataSource dataSource;
 
-    public void setDataSource(DataSource dataSource) {
+    public ContactDaoImpl(DataSource dataSource) {
         this.dataSource = dataSource;
     }
 
     @Override
     public int add(ContactModel contact) throws TransactionException {
+        log.info("Add a new contact ({} {})", contact.getFirstName(), contact.getLastName());
+
         PreparedStatement stmt = null;
         try {
             Connection connection = dataSource.getConnection();
@@ -70,12 +73,14 @@ public class ContactDaoImpl implements ContactDao {
         } catch (SQLException e) {
             throw new TransactionException("Insert Contact exception", e);
         } finally {
-            JdbcUtils.closeQuietly(null, stmt);
+            closeQuietly(null, stmt);
         }
     }
 
     @Override
     public int update(ContactModel contact) throws TransactionException {
+        log.info("Upload the contact with id: {}", contact.getId());
+
         PreparedStatement stmt = null;
         try {
             Connection connection = dataSource.getConnection();
@@ -94,14 +99,16 @@ public class ContactDaoImpl implements ContactDao {
             stmt.setInt(12, contact.getId());
             return stmt.executeUpdate();
         } catch (SQLException e) {
-            throw new TransactionException("Insert Contact exception", e);
+            throw new TransactionException("Update Contact exception", e);
         } finally {
-            JdbcUtils.closeQuietly(null, stmt);
+            closeQuietly(null, stmt);
         }
     }
 
     @Override
     public ContactModel get(int id) throws TransactionException {
+        log.info("Get a contact by id: {}", id);
+
         PreparedStatement stmt = null;
         ResultSet rs = null;
         try {
@@ -125,26 +132,27 @@ public class ContactDaoImpl implements ContactDao {
                 contact.setAvatar(rs.getString("avatar"));
 
                 AddressModel address = new AddressModel();
-                address.setCountry("country");
+                address.setCountry(rs.getString("country"));
                 address.setCity(rs.getString("city"));
                 address.setDetailAddress(rs.getString("detail_address"));
                 address.setZip(rs.getInt("zip"));
                 contact.setAddress(address);
                 return contact;
             } else{
-                throw new TransactionException("No such contact for id = \"" + id + "\".");
+                throw new TransactionException("No such contact for id = '" + id + "'");
             }
         } catch (SQLException e) {
             throw new TransactionException("Select Contact exception", e);
         } finally {
-            JdbcUtils.closeQuietly(rs, stmt);
+            closeQuietly(rs, stmt);
         }
     }
 
     @Override
-    public List<ContactModel> getAll(int page, int amount) throws TransactionException {
-        List<ContactModel> contacts = new ArrayList<>();
+    public List<ContactModel> getContactsByPage(int page, int amount) throws TransactionException {
+        log.info("Get a contacts list by page: {}", page);
 
+        List<ContactModel> contacts = new ArrayList<>();
         PreparedStatement stmt = null;
         ResultSet rs = null;
         try {
@@ -168,30 +176,31 @@ public class ContactDaoImpl implements ContactDao {
                 address.setDetailAddress(rs.getString("detail_address"));
                 address.setZip(rs.getInt("zip"));
                 contact.setAddress(address);
-
                 contacts.add(contact);
             }
         } catch (SQLException e) {
             throw new TransactionException("Select all Contacts exception", e);
         } finally {
-            JdbcUtils.closeQuietly(rs, stmt);
+            closeQuietly(rs, stmt);
         }
-
         return contacts;
     }
 
     @Override
     public int delete(int id) throws TransactionException {
+        log.info("Mark the contact with id: {} as deleted", id);
+
         PreparedStatement stmt = null;
         try {
             Connection connection = dataSource.getConnection();
             stmt = connection.prepareStatement(DELETE_SQL);
-            stmt.setInt(1, id);
+            stmt.setTimestamp(1, Timestamp.from(Instant.now()));
+            stmt.setInt(2, id);
             return stmt.executeUpdate();
         } catch (SQLException e) {
             throw new TransactionException("Delete Contact exception", e);
         } finally {
-            JdbcUtils.closeQuietly(null, stmt);
+            closeQuietly(null, stmt);
         }
     }
 
@@ -211,11 +220,7 @@ public class ContactDaoImpl implements ContactDao {
         } catch (SQLException e) {
             throw new TransactionException("Count contacts exception", e);
         } finally {
-            JdbcUtils.closeQuietly(null, stmt);
+            closeQuietly(rs, stmt);
         }
-    }
-
-    public static ContactDao getInstance() {
-        return instance;
     }
 }

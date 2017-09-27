@@ -1,13 +1,17 @@
 package com.itechart.contacts.db.model;
 
+import com.google.gson.annotations.SerializedName;
+
 public class AddressModel {
     private int id;
 
+    @SerializedName("country")
     private String country;
+    @SerializedName("city")
     private String city;
-
+    @SerializedName("detail_address")
     private String detailAddress; // format: street/house/apartment
-
+    @SerializedName("zip")
     private int zip;
 
     public int getId() {
@@ -52,5 +56,16 @@ public class AddressModel {
 
     public String getFullAddress() {
         return String.format("%s, %s, %s, %d", country, city, detailAddress, zip);
+    }
+
+    @Override
+    public String toString() {
+        return "AddressModel{" +
+                "id=" + id +
+                ", country='" + country + '\'' +
+                ", city='" + city + '\'' +
+                ", detailAddress='" + detailAddress + '\'' +
+                ", zip=" + zip +
+                '}';
     }
 }

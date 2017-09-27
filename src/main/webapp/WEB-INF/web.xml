@@ -11,13 +11,36 @@
     <display-name>Contacts Application</display-name>
 
     <servlet>
-        <servlet-name>ContactController</servlet-name>
-        <servlet-class>com.itechart.contacts.controller.ContactController</servlet-class>
+        <servlet-name>ContactsController</servlet-name>
+        <servlet-class>com.itechart.contacts.controller.ContactsController</servlet-class>
     </servlet>
     <servlet-mapping>
-        <servlet-name>ContactController</servlet-name>
+        <servlet-name>ContactsController</servlet-name>
         <url-pattern>/contacts</url-pattern>
     </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>ContactsController</servlet-name>
+        <url-pattern>/contacts/create</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>ContactsController</servlet-name>
+        <url-pattern>/contacts/edit</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>ContactsController</servlet-name>
+        <url-pattern>/contacts/delete</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>ContactsController</servlet-name>
+        <url-pattern>/contacts/save</url-pattern>
+    </servlet-mapping>
+
+    <resource-ref>
+        <description>MySQL Datasource</description>
+        <res-ref-name>jdbc/contacts</res-ref-name>
+        <res-type>javax.sql.DataSource</res-type>
+        <res-auth>Container</res-auth>
+    </resource-ref>
 
     <welcome-file-list>
         <welcome-file>index.jsp</welcome-file>

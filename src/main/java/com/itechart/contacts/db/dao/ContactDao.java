@@ -13,7 +13,7 @@ public interface ContactDao {
 
     ContactModel get(int id) throws TransactionException;
 
-    List<ContactModel> getAll(int page, int amount) throws TransactionException;
+    List<ContactModel> getContactsByPage(int page, int amount) throws TransactionException;
 
     int delete(int id) throws TransactionException;
 

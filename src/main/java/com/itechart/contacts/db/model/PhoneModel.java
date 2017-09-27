@@ -1,11 +1,41 @@
 package com.itechart.contacts.db.model;
 
+import com.google.gson.annotations.SerializedName;
+
 public class PhoneModel {
+    @SerializedName("phone_id")
+    private int id;
+    private int contactId;
+
+    @SerializedName("country_code")
     private int countryCode;
+    @SerializedName("operator_code")
     private int operatorCode;
+    @SerializedName("phone_num")
     private int phoneNumber;
-    private String type; // 'H' for home and 'M' for mobile
+    @SerializedName("phone_type")
+    private String type;
+    @SerializedName("comment")
     private String comment;
+
+    @SerializedName("mark")
+    private String mark;
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public int getContactId() {
+        return contactId;
+    }
+
+    public void setContactId(int contactId) {
+        this.contactId = contactId;
+    }
 
     public int getCountryCode() {
         return countryCode;
@@ -32,7 +62,7 @@ public class PhoneModel {
     }
 
     public String getFullPhoneNumber() {
-        return String.format("+%s%s%s", countryCode, operatorCode, phoneNumber);
+        return String.format("%s-%s-%s", countryCode, operatorCode, phoneNumber);
     }
 
     public String getType() {
@@ -49,5 +79,27 @@ public class PhoneModel {
 
     public void setComment(String comment) {
         this.comment = comment;
+    }
+
+    public String getMark() {
+        return mark;
+    }
+
+    public void setMark(String mark) {
+        this.mark = mark;
+    }
+
+    @Override
+    public String toString() {
+        return "PhoneModel{" +
+                "id=" + id +
+                ", contactId=" + contactId +
+                ", countryCode=" + countryCode +
+                ", operatorCode=" + operatorCode +
+                ", phoneNumber=" + phoneNumber +
+                ", type='" + type + '\'' +
+                ", comment='" + comment + '\'' +
+                ", mark='" + mark + '\'' +
+                '}';
     }
 }

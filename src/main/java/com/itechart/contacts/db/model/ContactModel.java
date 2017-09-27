@@ -1,28 +1,44 @@
 package com.itechart.contacts.db.model;
 
+import com.google.gson.annotations.SerializedName;
+
 import java.sql.Date;
 import java.util.List;
 
 public class ContactModel {
+    @SerializedName("contact_id")
     private int id;
 
+    @SerializedName("first_name")
     private String firstName; // required
+    @SerializedName("last_name")
     private String lastName; // required
+    @SerializedName("middle_name")
     private String middleName;
 
+    @SerializedName("birthday")
     private Date birthday;
-    private String sex; // 'M' for male and 'F' for female
+    @SerializedName("sex")
+    private String sex;
+    @SerializedName("nationality")
     private String nationality;
+    @SerializedName("marital_status")
     private String maritalStatus;
 
+    @SerializedName("site")
     private String site;
+    @SerializedName("email")
     private String email;
+    @SerializedName("job")
     private String currentJob;
 
+    @SerializedName("address")
     private AddressModel address;
 
+    @SerializedName("phones")
     private List<PhoneModel> phones;
 
+    @SerializedName("attachments")
     private List<AttachmentModel> attachments;
 
     private String avatar;
@@ -154,5 +170,23 @@ public class ContactModel {
 
     public void setAvatar(String avatar) {
         this.avatar = avatar;
+    }
+
+    @Override
+    public String toString() {
+        return "ContactModel{" +
+                "id=" + id +
+                ", firstName='" + firstName + '\'' +
+                ", lastName='" + lastName + '\'' +
+                ", middleName='" + middleName + '\'' +
+                ", birthday=" + birthday +
+                ", sex='" + sex + '\'' +
+                ", nationality='" + nationality + '\'' +
+                ", maritalStatus='" + maritalStatus + '\'' +
+                ", site='" + site + '\'' +
+                ", email='" + email + '\'' +
+                ", currentJob='" + currentJob + '\'' +
+                ", address=" + address +
+                '}';
     }
 }
