@@ -78,7 +78,35 @@ public class ContactsService {
 
         try {
             List<ContactModel> contacts;
+            int loadablePage;
             if (sPage == null) {
+                loadablePage = currentPage;
+            } else {
+                loadablePage = Integer.parseInt(sPage);
+            }
+            if (loadablePage < 0) {
+                throw new NumberFormatException("Page number is less than zero!");
+            }
+
+            contacts = txManger.executeTransaction(() -> {
+                int size = contactDao.size();
+                if (loadablePage * CONTACTS_AMOUNT_PER_PAGE < size) {
+                    currentPage = loadablePage;
+                    req.setAttribute("page", loadablePage);
+                    return contactDao.getContactsByPage(loadablePage, CONTACTS_AMOUNT_PER_PAGE);
+                } else if (loadablePage * CONTACTS_AMOUNT_PER_PAGE == size){
+                    currentPage = loadablePage;
+                    req.setAttribute("lastPage", true);
+                    req.setAttribute("page", loadablePage);
+                    return contactDao.getContactsByPage(loadablePage, CONTACTS_AMOUNT_PER_PAGE);
+                } else {
+                    req.setAttribute("lastPage", true);
+                    req.setAttribute("page", currentPage);
+                    return contactDao.getContactsByPage(currentPage, CONTACTS_AMOUNT_PER_PAGE);
+                }
+            });
+
+            /*if (sPage == null) {
                 contacts = txManger.executeTransaction(() -> {
                     int size = contactDao.size();
                     if (size <= CONTACTS_AMOUNT_PER_PAGE) {
@@ -110,8 +138,8 @@ public class ContactsService {
                         return contactDao.getContactsByPage(currentPage, CONTACTS_AMOUNT_PER_PAGE);
                     }
                 });
-            }
-            log.info("Loaded {} contacts", contacts.size());
+            }*/
+            log.info("Loaded '{}' contacts", contacts.size());
 
             req.setAttribute("contacts", contacts);
             req.getRequestDispatcher(LIST).forward(req, resp);
